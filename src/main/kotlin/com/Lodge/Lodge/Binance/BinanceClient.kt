@@ -7,7 +7,7 @@ import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
 @Service
-class PriceClient {
+class BinanceClient {
 
     fun getPrices() = WebClient
             .create("https://api.binance.com/api/v3/ticker/price")

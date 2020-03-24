@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
 import org.springframework.test.web.reactive.server.WebTestClient
 
-internal class PriceClientTest {
+internal class BinanceClientTest {
 
     @Test
     fun getPrices() {

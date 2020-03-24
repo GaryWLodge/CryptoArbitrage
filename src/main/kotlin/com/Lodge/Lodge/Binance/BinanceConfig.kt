@@ -10,7 +10,7 @@ import org.springframework.web.reactive.config.WebFluxConfigurer
 @Configuration
 @EnableWebFlux
 @ComponentScan("com.Lodge.Lodge.Binance")
-class WebConfig : WebFluxConfigurer {
+class BinanceConfig : WebFluxConfigurer {
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("api/**")
     }

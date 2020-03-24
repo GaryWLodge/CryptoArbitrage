@@ -2,16 +2,15 @@ package com.Lodge.Lodge.Binance
 
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
 
 @Service
 class BinanceService(
 
-        private val priceClient: PriceClient
+        private val binanceClient: BinanceClient
 ) {
     fun getPrice(): Flux<PriceResponse> {
 
-        return priceClient.getPrices()
+        return binanceClient.getPrices()
 
     }
 
