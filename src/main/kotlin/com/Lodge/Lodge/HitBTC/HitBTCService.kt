@@ -1,6 +1,5 @@
 package com.Lodge.Lodge.HitBTC
 
-import com.Lodge.Lodge.Binance.PriceResponse
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 
@@ -8,7 +7,7 @@ import reactor.core.publisher.Flux
 class HitBTCService (
     private val hitBTCClient: HitBTCClient
 ) {
-    fun getPrice(): Flux<PriceResponse> {
+    fun getPrice(): Flux<HitBTCPriceResponse> {
         return hitBTCClient.getPrices()
     }
 }

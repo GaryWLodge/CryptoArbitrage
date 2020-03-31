@@ -1,4 +1,4 @@
-package com.Lodge.Lodge.Binance
+package com.Lodge.Lodge.Huobi
 
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.MediaType
@@ -7,13 +7,13 @@ import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
 @Service
-class BinanceClient {
+class HuobiClient {
 
     fun getPrices() = WebClient
-            .create("https://api.binance.com/api/v3/ticker/price")
+            .create("https://api.huobi.pro/market/tickers")
             .get()
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()
-            .bodyToFlux(BinancePriceResponse::class.java)
+            .bodyToFlux(HuobiPriceResponse::class.java)
 
 }

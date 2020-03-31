@@ -19,7 +19,7 @@ class ArbitrageRouter {
     inner class ArbitrageRouterHandle(
     ) {
         fun getArbitragePricesHandler(request: ServerRequest, ArbitrageService: ArbitrageService): Mono<ServerResponse> {
-            return ArbitrageService.comparePriceBySymbol()
+            return ArbitrageService.combineExchanges()
                     .collectList()
                     .flatMap { response -> ServerResponse.ok().syncBody(response) }
 
