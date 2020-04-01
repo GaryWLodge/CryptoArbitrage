@@ -1,6 +1,5 @@
 package com.Lodge.Lodge.ArbitrageData;
 
-import com.Lodge.Lodge.Binance.BinancePriceResponse
 import com.Lodge.Lodge.Binance.BinanceService
 import com.Lodge.Lodge.HitBTC.HitBTCService
 import com.Lodge.Lodge.Huobi.HuobiService
@@ -18,18 +17,24 @@ class ArbitrageService(
 
 ) {
 
-    fun combineExchanges(): Flux<Any> {
+    fun combineExchanges(): Flux<priceModel> {
+
+        return Flux.merge(hitBTCService.getPrice(),
+                binanceService.getPrice())
 
 
-        return Flux.merge(hitBTCService.getPrice(), binanceService.getPrice(), huobiService.getPrice())
+
     }
 
 
-//    fun getLikeSymbol(): Flux<ExchangeList> {
-//
-//        return Flux.create()
-//
-//
-//    }
+    fun getLikeSymbol(): Flux<exchangeList> {
+
+        val newList: Flux<exchangeList>
+
+        Flux<exchangeList>.map { combineExchanges() ->  newList }
+
+    }
 
 }
+
+            

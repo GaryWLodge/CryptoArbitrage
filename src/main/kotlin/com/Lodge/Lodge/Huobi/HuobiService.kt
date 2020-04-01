@@ -6,11 +6,11 @@ import reactor.core.publisher.Flux
 @Service
 class HuobiService(
 
-        private val HuobiClient: HuobiClient
+        private val huobiClient: HuobiClient
 ) {
     fun getPrice(): Flux<HuobiPriceResponse> {
 
-        return HuobiClient.getPrices()
+        return huobiClient.getPrices()
 
     }
 
