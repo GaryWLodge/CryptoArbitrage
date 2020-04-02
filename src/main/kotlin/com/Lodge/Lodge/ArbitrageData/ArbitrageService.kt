@@ -21,17 +21,32 @@ class ArbitrageService(
 
         return Flux.merge(hitBTCService.getPrice(),
                 binanceService.getPrice())
-
-
-
     }
 
 
-    fun getLikeSymbol(): Flux<exchangeList> {
+    fun getAllSymbols(): Flux<exchangeSymbols> {
 
-        val newList: Flux<exchangeList>
+        return combineExchanges().map { priceModel ->
+            exchangeSymbols(priceModel.symbol)
+        }.distinct()
+    }
 
-        Flux<exchangeList>.map { combineExchanges() ->  newList }
+
+    fun getLikeSymbol(): Flux<ExchangeList> {
+
+        return combineExchanges().flatMap { priceModel ->
+            filterBySymbols(priceModel).map {
+                ExchangeList(priceModel.symbol,
+                        Exchange(priceModel.price, priceModel.exchange))
+            }
+        }
+    }
+
+    fun filterBySymbols(priceModel: priceModel): Flux<exchangeSymbols> {
+
+        return getAllSymbols().filter { exchangeSymbols ->
+            priceModel.symbol == exchangeSymbols.symbol
+        }
 
     }
 
