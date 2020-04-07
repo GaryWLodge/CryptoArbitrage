@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import java.time.Duration
 
 @Configuration
 @Service
@@ -16,5 +17,6 @@ class HitBTCClient {
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()
             .bodyToFlux(HitBTCPriceResponse::class.java)
+            .delaySequence(Duration.ofSeconds(1))
 
 }

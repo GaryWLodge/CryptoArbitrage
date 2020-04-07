@@ -1,15 +1,20 @@
 package com.Lodge.Lodge.ArbitrageData
 
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito
+import org.mockito.Mockito.mock
 
-import org.junit.jupiter.api.Assertions.*
+class ArbitrageServiceTest {
 
-internal class ArbitrageServiceTest {
-
-    @Test
-    fun comparePriceBySymbol() {
-
-
-
-    }
+//    @Test
+//    fun getLikeSymbols() {
+//
+//        val mockArbitrageService = ArbitrageService()
+//
+//       Mockito.`when`(mockArbitrageService)
+//
+//        val arbitrageRouterHandler = ArbitrageRouter().ArbitrageRouterHandle(mockArbitrageService)
+//
+//
+//    }
 }

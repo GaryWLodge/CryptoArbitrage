@@ -3,8 +3,13 @@ package com.Lodge.Lodge.ArbitrageData;
 import com.Lodge.Lodge.Binance.BinanceService
 import com.Lodge.Lodge.HitBTC.HitBTCService
 import com.Lodge.Lodge.Huobi.HuobiService
+import kotlinx.coroutines.reactive.collect
 import org.springframework.stereotype.Service
-import reactor.core.publisher.Flux
+import reactor.core.Disposable
+import reactor.core.publisher.*
+import reactor.util.function.Tuple2
+import java.util.logging.Level
+import java.util.stream.Collectors
 
 @Service
 class ArbitrageService(
@@ -32,14 +37,17 @@ class ArbitrageService(
     }
 
 
-    fun getLikeSymbol(): Flux<ExchangeList> {
+    fun getLikeSymbol(): Flux<List<priceModel>> {
 
-        return combineExchanges().flatMap { priceModel ->
-            filterBySymbols(priceModel).map {
-                ExchangeList(priceModel.symbol,
-                        Exchange(priceModel.price, priceModel.exchange))
-            }
-        }
+        Hooks.onOperatorDebug()
+        return getAllSymbols().flatMap { exchangeSymbols ->
+            combineExchanges().filter { priceModel ->
+                priceModel.symbol.contentEquals(exchangeSymbols.symbol)
+            }.distinct()
+                    .collect(Collectors.toList()).log()
+
+        }.log()
+
     }
 
     fun filterBySymbols(priceModel: priceModel): Flux<exchangeSymbols> {
