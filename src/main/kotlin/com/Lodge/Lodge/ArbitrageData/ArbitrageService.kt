@@ -24,8 +24,9 @@ class ArbitrageService(
 
     fun combineExchanges(): Flux<priceModel> {
 
-        return Flux.merge(hitBTCService.getPrice(),
-                binanceService.getPrice())
+        return Flux.merge(binanceService.getPrice(),
+                hitBTCService.getPrice(),
+        huobiService.getPrice())
     }
 
 
@@ -42,9 +43,9 @@ class ArbitrageService(
         Hooks.onOperatorDebug()
         return getAllSymbols().flatMap { exchangeSymbols ->
             combineExchanges().filter { priceModel ->
-                priceModel.symbol.contentEquals(exchangeSymbols.symbol)
-            }.distinct()
-                    .collect(Collectors.toList()).log()
+                priceModel.symbol.equals(
+                        exchangeSymbols.symbol)
+            }.collect(Collectors.toList()).log()
 
         }.log()
 

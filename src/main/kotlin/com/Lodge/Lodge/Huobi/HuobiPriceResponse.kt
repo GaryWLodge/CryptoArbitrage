@@ -1,5 +1,7 @@
 package com.Lodge.Lodge.Huobi
 
+import reactor.core.publisher.Flux
+
 data class HuobiPriceResponse(
         val `data`: List<Data>?
 )
