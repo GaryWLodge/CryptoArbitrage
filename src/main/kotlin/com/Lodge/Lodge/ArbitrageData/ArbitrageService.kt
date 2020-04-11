@@ -7,7 +7,9 @@ import kotlinx.coroutines.reactive.collect
 import org.springframework.stereotype.Service
 import reactor.core.Disposable
 import reactor.core.publisher.*
+import reactor.netty.ReactorNetty
 import reactor.util.function.Tuple2
+import java.time.Duration
 import java.util.logging.Level
 import java.util.stream.Collectors
 
@@ -22,7 +24,7 @@ class ArbitrageService(
 
 ) {
 
-    fun combineExchanges(): Flux<priceModel> {
+    fun combineExchanges(): Flux<priceModel?> {
 
         return Flux.merge(binanceService.getPrice(),
                 hitBTCService.getPrice(),
@@ -30,34 +32,35 @@ class ArbitrageService(
     }
 
 
-    fun getAllSymbols(): Flux<exchangeSymbols> {
+    fun getAllSymbols(): Flux<exchangeSymbols?> {
 
         return combineExchanges().map { priceModel ->
-            exchangeSymbols(priceModel.symbol)
+            priceModel?.symbol?.let { exchangeSymbols(it) }
         }.distinct()
     }
 
 
-    fun getLikeSymbol(): Flux<List<priceModel>> {
+    fun getLikeSymbol(): Flux<MutableList<priceModel?>> {
 
         Hooks.onOperatorDebug()
+        Hooks.enableContextLossTracking()
         return getAllSymbols().flatMap { exchangeSymbols ->
-            combineExchanges().filter { priceModel ->
-                priceModel.symbol.equals(
-                        exchangeSymbols.symbol)
-            }.collect(Collectors.toList()).log()
-
-        }.log()
-
-    }
-
-    fun filterBySymbols(priceModel: priceModel): Flux<exchangeSymbols> {
-
-        return getAllSymbols().filter { exchangeSymbols ->
-            priceModel.symbol == exchangeSymbols.symbol
+             combineExchanges().filter { priceModel ->
+                priceModel?.symbol?.toUpperCase().equals(
+                        exchangeSymbols?.symbol?.toUpperCase())
+             }.collectSortedList().log()
         }
-
     }
+
+//    fun getArbitrageData(): Flux<ArbitrageModel?>  {
+//
+//        getLikeSymbol().flatMap { priceModel: MutableList<priceModel?>? ->
+//            priceModel
+//        }
+//
+//
+//    }
+
 
 }
 

@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.router
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @Configuration
@@ -21,7 +22,7 @@ class ArbitrageRouter {
         fun getArbitragePricesHandler(request: ServerRequest, ArbitrageService: ArbitrageService): Mono<ServerResponse> {
             return ArbitrageService.getLikeSymbol()
                     .collectList()
-                    .flatMap { response -> ServerResponse.ok().syncBody(response) }
+                    .flatMap { response -> ServerResponse.ok().bodyValue(response) }
 
         }
     }

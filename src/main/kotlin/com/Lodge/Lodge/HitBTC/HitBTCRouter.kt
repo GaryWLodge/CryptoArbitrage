@@ -23,7 +23,7 @@ class HitBTCRouter {
             return HitBTCService.getPrice()
                     .collectList()
                     .flatMap { priceResponse ->
-                        ServerResponse.ok().syncBody(priceResponse)
+                        ServerResponse.ok().bodyValue(priceResponse)
                     }
         }
     }

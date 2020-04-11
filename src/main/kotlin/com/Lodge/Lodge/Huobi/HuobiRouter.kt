@@ -22,7 +22,7 @@ class HuobiRouter {
             return huobiService.getPrice()
                     .collectList()
                     .flatMap { priceResponse ->
-                        ServerResponse.ok().syncBody(priceResponse)
+                        ServerResponse.ok().bodyValue(priceResponse)
                     }
         }
     }

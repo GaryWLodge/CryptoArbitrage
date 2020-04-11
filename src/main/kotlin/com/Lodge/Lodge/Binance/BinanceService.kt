@@ -14,19 +14,10 @@ class BinanceService(
 
 
         return binanceClient.getPrices().map { binancePriceResponse ->
-            priceModel(binancePriceResponse.symbol, binancePriceResponse.price, binancePriceResponse.exchange ) }
-
-
+            priceModel(binancePriceResponse.symbol
+                    , binancePriceResponse.price
+                    , binancePriceResponse.exchange)
+        }
     }
-
-//    fun BinancePriceResponse.toPriceModel() = binanceClient.getPrices().blockFirst()?.let {
-//        priceModel(
-//                symbol = it.symbol,
-//                price = it.price,
-//                exchange = it.exchange)
-//    }
-
-
-
 
 }
