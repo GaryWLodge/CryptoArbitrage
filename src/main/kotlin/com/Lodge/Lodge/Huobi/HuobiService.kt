@@ -14,7 +14,7 @@ class HuobiService(
 
         return huobiClient.getPrices().flatMap { huobiPriceResponse ->
             huobiPriceResponse.data?.toFlux()?.map { data ->
-                priceModel(data.symbol, data.ask, data.exchange)
+                priceModel(data.symbol, data.ask.toBigDecimal(), data.exchange)
             }
         }
 

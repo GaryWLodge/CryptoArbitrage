@@ -3,7 +3,6 @@ package com.Lodge.Lodge.HitBTC
 import com.Lodge.Lodge.ArbitrageData.priceModel
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
-import reactor.core.publisher.toFlux
 
 @Service
 class HitBTCService(
@@ -13,7 +12,7 @@ class HitBTCService(
 
         return hitBTCClient.getPrices().map { hitBTCPriceResponse ->
             priceModel(hitBTCPriceResponse.symbol
-                    , hitBTCPriceResponse.ask
+                    , hitBTCPriceResponse.ask.toBigDecimal()
                     , hitBTCPriceResponse.exchange)
         }
 

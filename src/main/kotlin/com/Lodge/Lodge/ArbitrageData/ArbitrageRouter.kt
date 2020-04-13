@@ -2,6 +2,7 @@ package com.Lodge.Lodge.ArbitrageData
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.router
@@ -20,8 +21,7 @@ class ArbitrageRouter {
     inner class ArbitrageRouterHandle(
     ) {
         fun getArbitragePricesHandler(request: ServerRequest, ArbitrageService: ArbitrageService): Mono<ServerResponse> {
-            return ArbitrageService.getLikeSymbol()
-                    .collectList()
+            return ArbitrageService.getArbitrageData()
                     .flatMap { response -> ServerResponse.ok().bodyValue(response) }
 
         }

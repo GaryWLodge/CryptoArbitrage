@@ -3,15 +3,9 @@ package com.Lodge.Lodge.ArbitrageData;
 import com.Lodge.Lodge.Binance.BinanceService
 import com.Lodge.Lodge.HitBTC.HitBTCService
 import com.Lodge.Lodge.Huobi.HuobiService
-import kotlinx.coroutines.reactive.collect
 import org.springframework.stereotype.Service
-import reactor.core.Disposable
 import reactor.core.publisher.*
-import reactor.netty.ReactorNetty
-import reactor.util.function.Tuple2
-import java.time.Duration
-import java.util.logging.Level
-import java.util.stream.Collectors
+import java.math.BigDecimal
 
 @Service
 class ArbitrageService(
@@ -28,7 +22,7 @@ class ArbitrageService(
 
         return Flux.merge(binanceService.getPrice(),
                 hitBTCService.getPrice(),
-        huobiService.getPrice())
+                huobiService.getPrice())
     }
 
 
@@ -45,22 +39,39 @@ class ArbitrageService(
         Hooks.onOperatorDebug()
         Hooks.enableContextLossTracking()
         return getAllSymbols().flatMap { exchangeSymbols ->
-             combineExchanges().filter { priceModel ->
+            combineExchanges().filter { priceModel ->
                 priceModel?.symbol?.toUpperCase().equals(
                         exchangeSymbols?.symbol?.toUpperCase())
-             }.collectSortedList().log()
+            }.collectList().log()
         }
     }
 
-//    fun getArbitrageData(): Flux<ArbitrageModel?>  {
-//
-//        getLikeSymbol().flatMap { priceModel: MutableList<priceModel?>? ->
-//            priceModel
-//        }
-//
-//
-//    }
 
+    fun getArbitrageData(): Mono<MutableList<Unit?>> {
+        return getLikeSymbol().flatMap { priceModels: MutableList<priceModel?> ->
+            getMaxMinPriceModel(priceModels).takeIf {
+                priceModels[0]?.equals(priceModels[1])!!
+            }?.map { val priceDiff: BigDecimal? = priceModels[1]?.price?.let { it1 -> priceModels[0]?.price?.rem(it1) }
+                priceModels[0]?.symbol?.let { it1 ->
+                    priceModels[0]?.let { it2 -> priceModels[1]?.let { it3 -> ExchangeModel(it2, it3) } }?.let { it3 ->
+                        if (priceDiff != null) {
+                            ArbitrageModel(it1, priceDiff, it3)
+                        }
+                    }
+                }
+            }
+
+        }.collectList().log()
+    }
+
+
+    fun getMaxMinPriceModel(priceModels: MutableList<priceModel?>?): Mono<MutableList<priceModel>> {
+
+        val maxPrice: priceModel? = priceModels?.maxBy { priceModel: priceModel? -> priceModel?.price!! }
+        val minPrice: priceModel? = priceModels?.minBy { priceModel: priceModel? -> priceModel?.price!! }
+
+        return Flux.concat(maxPrice?.toMono(), minPrice?.toMono()).collectList()
+    }
 
 }
 

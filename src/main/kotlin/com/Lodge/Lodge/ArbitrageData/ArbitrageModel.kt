@@ -1,15 +1,16 @@
 package com.Lodge.Lodge.ArbitrageData
 
+import java.math.BigDecimal
+
 data class ArbitrageModel(
 
         val symbol: String,
-        val differencePercent: Double,
+        val differencePercent: BigDecimal,
         val exchangeModel: ExchangeModel
 
 )
 
 data class ExchangeModel(
-        val highLow: String,
-        val price: Double,
-        val exchange: String
+        val exchangeHigh: priceModel,
+        val exchangeLow: priceModel
 )

@@ -15,7 +15,7 @@ class BinanceService(
 
         return binanceClient.getPrices().map { binancePriceResponse ->
             priceModel(binancePriceResponse.symbol
-                    , binancePriceResponse.price
+                    , binancePriceResponse.price.toBigDecimal()
                     , binancePriceResponse.exchange)
         }
     }
