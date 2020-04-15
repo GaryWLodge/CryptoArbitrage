@@ -55,35 +55,35 @@ class ArbitrageService(
         }
 
         return minMax.filter { priceModels: MutableList<priceModel>? ->
-            priceModels?.get(0)?.equals(priceModels.get(1))!! ||
-                    !priceModels.isNullOrEmpty()
+            !priceModels?.get(0)?.exchange?.contentEquals(priceModels.get(1).exchange!!)!!
         }.map { priceModelList: MutableList<priceModel>? ->
 
-         var getDifference = priceModelList?.get(0)?.price?.let {
-                priceModelList.get(1).price?.div(it)
+            var getDifference = priceModelList?.get(0)?.price?.let {
+                priceModelList.get(1).price?.subtract(it)
             }
 
-         var getAverage = priceModelList?.get(0)?.price?.let {
-             priceModelList.get(1).price!!.plus(it).div(BigDecimal(2)) }
+            var getAverage = priceModelList?.get(0)?.price?.let {
+                priceModelList.get(1).price!!.plus(it).div(BigDecimal(2))
+            }
 
-         var differencePercentage = getDifference?.let {
-             getAverage?.div(it)?.multiply(BigDecimal(100))
-         }
+            var differencePercentage = getDifference?.let {
+                getAverage?.div(it)?.multiply(BigDecimal(100))
+            }
 
-            ArbitrageModel(priceModelList?.get(0)?.symbol, differencePercentage ,
-                    ExchangeModel(priceModelList?.get(0), priceModelList?.get(1)) )
-    }.log()
+            ArbitrageModel(priceModelList?.get(0)?.symbol, getAverage,
+                    ExchangeModel(priceModelList?.get(0), priceModelList?.get(1)))
+        }.log()
 
-}
+    }
 
 
-fun getMaxMinPriceModel(priceModels: MutableList<priceModel?>?): Mono<MutableList<priceModel>> {
+    fun getMaxMinPriceModel(priceModels: MutableList<priceModel?>?): Mono<MutableList<priceModel>> {
 
-    val maxPrice: priceModel? = priceModels?.maxBy { priceModel: priceModel? -> priceModel?.price!! }
-    val minPrice: priceModel? = priceModels?.minBy { priceModel: priceModel? -> priceModel?.price!! }
+        val maxPrice: priceModel? = priceModels?.maxBy { priceModel: priceModel? -> priceModel?.price!! }
+        val minPrice: priceModel? = priceModels?.minBy { priceModel: priceModel? -> priceModel?.price!! }
 
-    return Flux.concat(maxPrice?.toMono(), minPrice?.toMono()).collectList()
-}
+        return Flux.concat(maxPrice?.toMono(), minPrice?.toMono()).collectList()
+    }
 
 }
 
