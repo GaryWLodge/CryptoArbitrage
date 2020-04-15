@@ -6,7 +6,6 @@ import com.Lodge.Lodge.Huobi.HuobiService
 import org.springframework.stereotype.Service
 import reactor.core.publisher.*
 import java.math.BigDecimal
-import java.time.Duration
 
 @Service
 class ArbitrageService(
@@ -43,37 +42,40 @@ class ArbitrageService(
             combineExchanges().filter { priceModel ->
                 priceModel?.symbol?.toUpperCase().equals(
                         exchangeSymbols?.symbol?.toUpperCase())
-            }.collectList().log()
+            }.collectList()
         }
     }
 
 
-    fun getArbitrageData(): Flux<MutableList<priceModel>> {
+    fun getArbitrageData(): Flux<ArbitrageModel> {
 
         var minMax = getLikeSymbol().flatMap { priceModelList: MutableList<priceModel?>? ->
             getMaxMinPriceModel(priceModelList)
         }
 
-        var filterOutDoubles = minMax.filter { priceModels: MutableList<priceModel>? ->
-            !priceModels?.get(0)?.exchange.equals(priceModels?.get(0)?.exchange) ||
-                    !priceModels.isNullOrEmpty()}
+        return minMax.filter { priceModels: MutableList<priceModel>? ->
+            !priceModels?.get(0)?.equals(priceModels.get(1))!! ||
+                    !priceModels.isNullOrEmpty()
+        }.map { priceModelList: MutableList<priceModel>? ->
 
-        var getDeferencePercent = filterOutDoubles.map { priceModelList: MutableList<priceModel>? ->
-            priceModelList?.get(1)?.price?.let { priceModelList.get(0).price?.div(it)?.times(BigDecimal(100)) }
-        }
+         var getDifferencePercentage = priceModelList?.get(1)?.price?.let {
+                priceModelList.get(0).price?.div(it)?.times(BigDecimal(100))
+            }
 
-        return
+            ArbitrageModel(priceModelList?.get(0)?.symbol, getDifferencePercentage ,
+                    ExchangeModel(priceModelList?.get(0), priceModelList?.get(1)) )
+    }.log()
 
-    }
+}
 
 
-    fun getMaxMinPriceModel(priceModels: MutableList<priceModel?>?): Mono<MutableList<priceModel>> {
+fun getMaxMinPriceModel(priceModels: MutableList<priceModel?>?): Mono<MutableList<priceModel>> {
 
-        val maxPrice: priceModel? = priceModels?.maxBy { priceModel: priceModel? -> priceModel?.price!! }
-        val minPrice: priceModel? = priceModels?.minBy { priceModel: priceModel? -> priceModel?.price!! }
+    val maxPrice: priceModel? = priceModels?.maxBy { priceModel: priceModel? -> priceModel?.price!! }
+    val minPrice: priceModel? = priceModels?.minBy { priceModel: priceModel? -> priceModel?.price!! }
 
-        return Flux.concat(maxPrice?.toMono(), minPrice?.toMono()).collectList()
-    }
+    return Flux.concat(maxPrice?.toMono(), minPrice?.toMono()).collectList()
+}
 
 }
 
