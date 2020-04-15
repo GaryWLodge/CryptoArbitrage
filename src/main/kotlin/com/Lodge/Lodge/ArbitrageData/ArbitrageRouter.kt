@@ -22,6 +22,7 @@ class ArbitrageRouter {
     ) {
         fun getArbitragePricesHandler(request: ServerRequest, ArbitrageService: ArbitrageService): Mono<ServerResponse> {
             return ArbitrageService.getArbitrageData()
+                    .collectList()
                     .flatMap { response -> ServerResponse.ok().bodyValue(response) }
 
         }

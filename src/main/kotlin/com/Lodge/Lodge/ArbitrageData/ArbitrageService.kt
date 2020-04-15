@@ -6,6 +6,7 @@ import com.Lodge.Lodge.Huobi.HuobiService
 import org.springframework.stereotype.Service
 import reactor.core.publisher.*
 import java.math.BigDecimal
+import java.time.Duration
 
 @Service
 class ArbitrageService(
@@ -47,21 +48,22 @@ class ArbitrageService(
     }
 
 
-    fun getArbitrageData(): Mono<MutableList<Unit?>> {
-        return getLikeSymbol().flatMap { priceModels: MutableList<priceModel?> ->
-            getMaxMinPriceModel(priceModels).takeIf {
-                priceModels[0]?.equals(priceModels[1])!!
-            }?.map { val priceDiff: BigDecimal? = priceModels[1]?.price?.let { it1 -> priceModels[0]?.price?.rem(it1) }
-                priceModels[0]?.symbol?.let { it1 ->
-                    priceModels[0]?.let { it2 -> priceModels[1]?.let { it3 -> ExchangeModel(it2, it3) } }?.let { it3 ->
-                        if (priceDiff != null) {
-                            ArbitrageModel(it1, priceDiff, it3)
-                        }
-                    }
-                }
-            }
+    fun getArbitrageData(): Flux<MutableList<priceModel>> {
 
-        }.collectList().log()
+        var minMax = getLikeSymbol().flatMap { priceModelList: MutableList<priceModel?>? ->
+            getMaxMinPriceModel(priceModelList)
+        }
+
+        var filterOutDoubles = minMax.filter { priceModels: MutableList<priceModel>? ->
+            !priceModels?.get(0)?.exchange.equals(priceModels?.get(0)?.exchange) ||
+                    !priceModels.isNullOrEmpty()}
+
+        var getDeferencePercent = filterOutDoubles.map { priceModelList: MutableList<priceModel>? ->
+            priceModelList?.get(1)?.price?.let { priceModelList.get(0).price?.div(it)?.times(BigDecimal(100)) }
+        }
+
+        return
+
     }
 
 
