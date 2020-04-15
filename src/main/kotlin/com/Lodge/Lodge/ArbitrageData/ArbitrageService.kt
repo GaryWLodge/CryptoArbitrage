@@ -6,6 +6,7 @@ import com.Lodge.Lodge.Huobi.HuobiService
 import org.springframework.stereotype.Service
 import reactor.core.publisher.*
 import java.math.BigDecimal
+import java.text.NumberFormat
 
 @Service
 class ArbitrageService(
@@ -54,15 +55,22 @@ class ArbitrageService(
         }
 
         return minMax.filter { priceModels: MutableList<priceModel>? ->
-            !priceModels?.get(0)?.equals(priceModels.get(1))!! ||
+            priceModels?.get(0)?.equals(priceModels.get(1))!! ||
                     !priceModels.isNullOrEmpty()
         }.map { priceModelList: MutableList<priceModel>? ->
 
-         var getDifferencePercentage = priceModelList?.get(1)?.price?.let {
-                priceModelList.get(0).price?.div(it)?.times(BigDecimal(100))
+         var getDifference = priceModelList?.get(0)?.price?.let {
+                priceModelList.get(1).price?.div(it)
             }
 
-            ArbitrageModel(priceModelList?.get(0)?.symbol, getDifferencePercentage ,
+         var getAverage = priceModelList?.get(0)?.price?.let {
+             priceModelList.get(1).price!!.plus(it).div(BigDecimal(2)) }
+
+         var differencePercentage = getDifference?.let {
+             getAverage?.div(it)?.multiply(BigDecimal(100))
+         }
+
+            ArbitrageModel(priceModelList?.get(0)?.symbol, differencePercentage ,
                     ExchangeModel(priceModelList?.get(0), priceModelList?.get(1)) )
     }.log()
 
