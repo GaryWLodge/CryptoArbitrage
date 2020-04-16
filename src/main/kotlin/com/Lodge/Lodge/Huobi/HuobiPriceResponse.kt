@@ -7,7 +7,7 @@ data class HuobiPriceResponse(
 )
 
 data class Data(
-        val ask: String,
+        val bid: String,
         val symbol: String,
         val exchange: String = "Huobi"
 )
