@@ -1,10 +1,10 @@
 package com.Lodge.Lodge.ArbitrageData;
 
-import com.Lodge.Lodge.Binance.BinanceService
-import com.Lodge.Lodge.Bittrex.BittrexService
-import com.Lodge.Lodge.HitBTC.HitBTCService
-import com.Lodge.Lodge.Huobi.HuobiService
-import com.Lodge.Lodge.Okex.OkexService
+import com.Lodge.Lodge.Exchanges.Binance.BinanceService
+import com.Lodge.Lodge.Exchanges.Bittrex.BittrexService
+import com.Lodge.Lodge.Exchanges.Digifinex.DigifinexService
+import com.Lodge.Lodge.Exchanges.HitBTC.HitBTCService
+import com.Lodge.Lodge.Exchanges.Huobi.HuobiService
 import org.springframework.stereotype.Service
 import reactor.core.publisher.*
 import java.math.BigDecimal
@@ -16,8 +16,7 @@ class ArbitrageService(
         private val hitBTCService: HitBTCService,
         private val huobiService: HuobiService,
         private val bittrexService: BittrexService,
-        private val okexService: OkexService
-
+        private val digifinexService: DigifinexService
 
 ) {
 
@@ -27,7 +26,7 @@ class ArbitrageService(
                 hitBTCService.getPrice(),
                 huobiService.getPrice(),
                 bittrexService.getPrice(),
-                okexService.getPrice())
+                digifinexService.getPrice())
     }
 
 
