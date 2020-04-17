@@ -1,8 +1,10 @@
 package com.Lodge.Lodge.ArbitrageData;
 
 import com.Lodge.Lodge.Binance.BinanceService
+import com.Lodge.Lodge.Bittrex.BittrexService
 import com.Lodge.Lodge.HitBTC.HitBTCService
 import com.Lodge.Lodge.Huobi.HuobiService
+import com.Lodge.Lodge.Okex.OkexService
 import org.springframework.stereotype.Service
 import reactor.core.publisher.*
 import java.math.BigDecimal
@@ -11,10 +13,11 @@ import java.math.BigDecimal
 class ArbitrageService(
 
         private val binanceService: BinanceService,
-
         private val hitBTCService: HitBTCService,
+        private val huobiService: HuobiService,
+        private val bittrexService: BittrexService,
+        private val okexService: OkexService
 
-        private val huobiService: HuobiService
 
 ) {
 
@@ -22,7 +25,9 @@ class ArbitrageService(
 
         return Flux.merge(binanceService.getPrice(),
                 hitBTCService.getPrice(),
-                huobiService.getPrice())
+                huobiService.getPrice(),
+                bittrexService.getPrice(),
+                okexService.getPrice())
     }
 
 
@@ -40,39 +45,10 @@ class ArbitrageService(
         Hooks.enableContextLossTracking()
         return getAllSymbols().flatMap { exchangeSymbols ->
             combineExchanges().filter { priceModel ->
-                priceModel?.symbol?.toUpperCase().equals(
-                        exchangeSymbols?.symbol?.toUpperCase())
-            }.collectList()
+                priceModel?.symbol?.equals(
+                        exchangeSymbols?.symbol, true)!!
+            }.collectList().log()
         }
-    }
-
-
-    fun getArbitrageData(): Flux<ArbitrageModel?> {
-
-        var minMax = getLikeSymbol().flatMap { priceModelList: MutableList<priceModel?>? ->
-            getMaxMinPriceModel(priceModelList)
-        }
-
-        return minMax.filter { priceModels: MutableList<priceModel>? ->
-            !priceModels?.get(0)?.exchange?.contentEquals(priceModels.get(1).exchange!!)!!
-        }.map { priceModelList: MutableList<priceModel>? ->
-
-            var getDifference = priceModelList?.get(0)?.price?.let {
-                priceModelList.get(1).price?.subtract(it)
-            }
-
-            var getAverage = priceModelList?.get(0)?.price?.let {
-                priceModelList.get(1).price!!.plus(it).div(BigDecimal(2))
-            }
-
-            var differencePercentage = getDifference?.div(getAverage!!)?.times(BigDecimal(100))
-
-            differencePercentage?.toPlainString()?.let {
-                ArbitrageModel(priceModelList?.get(0)?.symbol, it,
-                        ExchangeModel(priceModelList?.get(0), priceModelList?.get(1)))
-            }
-        }.log()
-
     }
 
 
@@ -82,6 +58,35 @@ class ArbitrageService(
         val minPrice: priceModel? = priceModels?.minBy { priceModel: priceModel? -> priceModel?.price!! }
 
         return Flux.concat(maxPrice?.toMono(), minPrice?.toMono()).collectList()
+    }
+
+
+    fun getArbitrageData(): Flux<ArbitrageModel?> {
+
+        val minMax = getLikeSymbol().flatMap { priceModelList: MutableList<priceModel?>? ->
+            getMaxMinPriceModel(priceModelList)
+        }
+
+        return minMax.filter { priceModels: MutableList<priceModel>? ->
+            !priceModels?.get(0)?.exchange?.contentEquals(priceModels.get(1).exchange!!)!!
+        }.map { priceModelList: MutableList<priceModel>? ->
+
+            val getDifference = priceModelList?.get(0)?.price?.let {
+                priceModelList.get(1).price?.subtract(it)
+            }
+
+            val getAverage = priceModelList?.get(0)?.price?.let {
+                priceModelList.get(1).price!!.plus(it).div(BigDecimal(2))
+            }
+
+            val differencePercentage = getDifference?.div(getAverage!!)?.times(BigDecimal(100))
+
+            differencePercentage?.toPlainString()?.let {
+                ArbitrageModel(priceModelList.get(0).symbol, it,
+                        ExchangeModel(priceModelList.get(0), priceModelList.get(1)))
+            }
+        }.log()
+
     }
 
 }

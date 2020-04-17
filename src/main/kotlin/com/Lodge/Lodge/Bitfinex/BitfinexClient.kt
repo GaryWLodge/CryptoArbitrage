@@ -1,4 +1,4 @@
-package com.Lodge.Lodge.Binance
+package com.Lodge.Lodge.Bitfinex
 
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.MediaType
@@ -8,14 +8,14 @@ import java.time.Duration
 
 @Configuration
 @Service
-class BinanceClient {
+class BitfinexClient {
 
     fun getPrices() = WebClient
-            .create("https://api.binance.com/api/v3/ticker/price")
+            .create("https://api-pub.bitfinex.com/v2/tickers?symbols=ALL")
             .get()
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()
-            .bodyToFlux(BinancePriceResponse::class.java)
-            .delaySequence(Duration.ofSeconds(2))
+            .bodyToFlux(BitfinexPriceResponse::class.java)
+            .delaySequence(Duration.ofSeconds(1))
 
 }

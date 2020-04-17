@@ -16,6 +16,6 @@ class HuobiClient {
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()
             .bodyToFlux(HuobiPriceResponse::class.java)
-            .delaySequence(Duration.ofSeconds(1))
+            .delaySequence(Duration.ofSeconds(2))
 
 }

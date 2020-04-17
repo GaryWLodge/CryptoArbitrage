@@ -1,4 +1,4 @@
-package com.Lodge.Lodge.Binance
+package com.Lodge.Lodge.Bittrex
 
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.MediaType
@@ -8,14 +8,14 @@ import java.time.Duration
 
 @Configuration
 @Service
-class BinanceClient {
+class BittrexClient {
 
     fun getPrices() = WebClient
-            .create("https://api.binance.com/api/v3/ticker/price")
+            .create("https://api.bittrex.com/api/v1.1/public/getmarketsummaries")
             .get()
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()
-            .bodyToFlux(BinancePriceResponse::class.java)
+            .bodyToFlux(BittrexPriceResponse::class.java)
             .delaySequence(Duration.ofSeconds(2))
 
 }

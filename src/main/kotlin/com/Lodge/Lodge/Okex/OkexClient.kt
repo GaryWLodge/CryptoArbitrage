@@ -1,4 +1,4 @@
-package com.Lodge.Lodge.Binance
+package com.Lodge.Lodge.Okex
 
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.MediaType
@@ -8,14 +8,14 @@ import java.time.Duration
 
 @Configuration
 @Service
-class BinanceClient {
+class OkexClient {
 
     fun getPrices() = WebClient
-            .create("https://api.binance.com/api/v3/ticker/price")
+            .create("https://www.okex.com/api/spot/v3/instruments/ticker")
             .get()
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()
-            .bodyToFlux(BinancePriceResponse::class.java)
-            .delaySequence(Duration.ofSeconds(2))
+            .bodyToFlux(OkexPriceResponse::class.java)
+            .delaySequence(Duration.ofSeconds(6))
 
 }
