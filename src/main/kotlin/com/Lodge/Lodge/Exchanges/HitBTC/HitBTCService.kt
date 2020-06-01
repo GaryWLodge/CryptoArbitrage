@@ -3,6 +3,7 @@ package com.Lodge.Lodge.Exchanges.HitBTC
 import com.Lodge.Lodge.ArbitrageData.priceModel
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
+import reactor.core.publisher.toFlux
 import java.math.MathContext
 import java.math.RoundingMode
 
@@ -14,7 +15,7 @@ class HitBTCService(
 
         return hitBTCClient.getPrices().map { hitBTCPriceResponse ->
             priceModel(hitBTCPriceResponse.symbol
-                    , hitBTCPriceResponse.ask.toBigDecimal(MathContext(15, RoundingMode.UNNECESSARY))
+                    , hitBTCPriceResponse.last.toBigDecimal()
                     , hitBTCPriceResponse.exchange)
         }
 

@@ -16,6 +16,6 @@ class HitBTCClient {
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()
             .bodyToFlux(HitBTCPriceResponse::class.java)
-            .delaySequence(Duration.ofSeconds(2))
+            .delaySequence(Duration.ofSeconds(3))
 
 }

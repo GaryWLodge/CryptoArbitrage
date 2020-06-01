@@ -46,7 +46,7 @@ class ArbitrageService(
             combineExchanges().filter { priceModel ->
                 priceModel?.symbol?.equals(
                         exchangeSymbols?.symbol, true)!!
-            }.collectList().log()
+            }.collectList()
         }
     }
 

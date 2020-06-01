@@ -9,6 +9,6 @@ data class ArbitrageModel(
 )
 
 data class ExchangeModel(
-        val exchangeHigh: priceModel?,
-        val exchangeLow: priceModel?
+        val exchangeSell: priceModel?,
+        val exchangeBuy: priceModel?
 )
